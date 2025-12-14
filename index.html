@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Code Decrypter</title>
+    <title>Universal Code Encrypter/Decrypter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,12 +26,28 @@
             border: 1px solid #ccc;
             padding: 10px;
             min-height: 100px;
+            background-color: orange;
+            border-radius: 10px;
+        }
+        button {
+            background-color: orange;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1>Universal Code Decrypter</h1>
-    <p>This tool decodes various common codes and ciphers. Select the type and input the encoded text.</p>
+    <h1>Universal Code Encrypter/Decrypter</h1>
+    <p>This tool encodes and decodes various common codes and ciphers. Select the mode, type, and input the text.</p>
+    
+    <label for="mode">Select Mode:</label>
+    <select id="mode">
+        <option value="decode">Decode</option>
+        <option value="encode">Encode</option>
+    </select>
     
     <label for="cipherType">Select Code Type:</label>
     <select id="cipherType">
@@ -57,44 +73,76 @@
         <option value="nato">NATO Phonetic Alphabet</option>
     </select>
     
-    <label for="inputText">Encoded Input:</label>
-    <textarea id="inputText" placeholder="Enter encoded text here..."></textarea>
+    <label for="inputText">Input Text:</label>
+    <textarea id="inputText" placeholder="Enter text here..."></textarea>
     
-    <button onclick="decode()">Decode</button>
+    <button onclick="process()">Process</button>
     
-    <h2>Decoded Output:</h2>
+    <h2>Output:</h2>
     <div id="output"></div>
 
     <script>
+        const morseCode = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
+            'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
+            'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---',
+            'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+            'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--',
+            'Z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--',
+            '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
+            '9': '----.', '.': '.-.-.-', ',': '--..--', '?': '..--..', "'": '.----.',
+            '!': '-.-.--', '/': '-..-.', '(': '-.--.', ')': '-.--.-', '&': '.-...',
+            ':': '---...', ';': '-.-.-.', '=': '-...-', '+': '.-.-.', '-': '-....-',
+            '_': '..--.-', '"': '.-..-.', '$': '...-..-', '@': '.--.-.', ' ': '/'
+        };
+
+        const brailleMap = {
+            'A': '⠁', 'B': '⠃', 'C': '⠉', 'D': '⠙', 'E': '⠑',
+            'F': '⠋', 'G': '⠛', 'H': '⠓', 'I': '⠊', 'J': '⠚',
+            'K': '⠅', 'L': '⠇', 'M': '⠍', 'N': '⠝', 'O': '⠕',
+            'P': '⠏', 'Q': '⠟', 'R': '⠗', 'S': '⠎', 'T': '⠞',
+            'U': '⠥', 'V': '⠧', 'W': '⠺', 'X': '⠭', 'Y': '⠽',
+            'Z': '⠵', '#': '⠼', '.': '⠲', '?': '⠦', '!': '⠖',
+            '-': '⠤', '/': '⠌', '\\': '⠳', '(': '⠪', ')': '⠻',
+            '0': '⠼⠚', '1': '⠼⠁', '2': '⠼⠃', '3': '⠼⠉', '4': '⠼⠙',
+            '5': '⠼⠑', '6': '⠼⠋', '7': '⠼⠛', '8': '⠼⠓', '9': '⠼⠊',
+            ' ': ' '
+        };
+
+        const tapMap = {
+            'A': '11', 'B': '12', 'C': '13', 'D': '14', 'E': '15',
+            'F': '21', 'G': '22', 'H': '23', 'I': '24', 'J': '25',
+            'K': '13', 'L': '31', 'M': '32', 'N': '33', 'O': '34', 'P': '35',
+            'Q': '41', 'R': '42', 'S': '43', 'T': '44', 'U': '45',
+            'V': '51', 'W': '52', 'X': '53', 'Y': '54', 'Z': '55',
+            ' ': '00' // Placeholder for space
+        };
+
+        const leetMap = {
+            'A': '4', 'B': '8', 'C': 'C', 'D': 'D', 'E': '3',
+            'F': 'F', 'G': '6', 'H': 'H', 'I': '1', 'J': 'J',
+            'K': 'K', 'L': 'L', 'M': 'M', 'N': 'N', 'O': '0',
+            'P': 'P', 'Q': 'Q', 'R': 'R', 'S': '5', 'T': '7',
+            'U': 'U', 'V': 'V', 'W': 'W', 'X': 'X', 'Y': 'Y', 'Z': '2'
+        };
+
+        const natoMap = {
+            'A': 'ALFA', 'B': 'BRAVO', 'C': 'CHARLIE', 'D': 'DELTA', 'E': 'ECHO',
+            'F': 'FOXTROT', 'G': 'GOLF', 'H': 'HOTEL', 'I': 'INDIA', 'J': 'JULIETT',
+            'K': 'KILO', 'L': 'LIMA', 'M': 'MIKE', 'N': 'NOVEMBER', 'O': 'OSCAR',
+            'P': 'PAPA', 'Q': 'QUEBEC', 'R': 'ROMEO', 'S': 'SIERRA', 'T': 'TANGO',
+            'U': 'UNIFORM', 'V': 'VICTOR', 'W': 'WHISKEY', 'X': 'XRAY', 'Y': 'YANKEE',
+            'Z': 'ZULU'
+        };
+
         const decoders = {
             morse: function(input) {
-                const morseCode = {
-                    '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
-                    '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
-                    '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
-                    '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
-                    '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y',
-                    '--..': 'Z', '-----': '0', '.----': '1', '..---': '2', '...--': '3',
-                    '....-': '4', '.....': '5', '-....': '6', '--...': '7', '---..': '8',
-                    '----.': '9', '.-.-.-': '.', '--..--': ',', '..--..': '?', '.----.': "'",
-                    '-.-.--': '!', '-..-.': '/', '-.--.': '(', '-.--.-': ')', '.-...': '&',
-                    '---...': ':', '-.-.-.': ';', '-...-': '=', '.-.-.': '+', '-....-': '-',
-                    '..--.-': '_', '.-..-.': '"', '...-..-': '$', '.--.-.': '@', '/': ' '
-                };
-                return input.split(' ').map(code => morseCode[code] || '').join('');
+                const revMorse = Object.fromEntries(Object.entries(morseCode).map(([k, v]) => [v, k]));
+                return input.split(' ').map(code => revMorse[code] || '').join('');
             },
             braille: function(input) {
-                const brailleMap = {
-                    '⠁': 'A', '⠃': 'B', '⠉': 'C', '⠙': 'D', '⠑': 'E',
-                    '⠋': 'F', '⠛': 'G', '⠓': 'H', '⠊': 'I', '⠚': 'J',
-                    '⠅': 'K', '⠇': 'L', '⠍': 'M', '⠝': 'N', '⠕': 'O',
-                    '⠏': 'P', '⠟': 'Q', '⠗': 'R', '⠎': 'S', '⠞': 'T',
-                    '⠥': 'U', '⠧': 'V', '⠺': 'W', '⠭': 'X', '⠽': 'Y',
-                    '⠵': 'Z', '⠼': '#', '⠲': '.', '⠦': '?', '⠖': '!',
-                    '⠤': '-', '⠌': '/', '⠳': '\\', '⠪': '(', '⠻': ')'
-                    // Add more if needed, but this is basic letters and punctuation
-                };
-                return input.split('').map(char => brailleMap[char] || char).join('');
+                const revBraille = Object.fromEntries(Object.entries(brailleMap).map(([k, v]) => [v, k]));
+                return input.split('').map(char => revBraille[char] || char).join('');
             },
             binary: function(input) {
                 return input.match(/.{1,8}/g).map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
@@ -105,33 +153,29 @@
             base64: function(input) {
                 return atob(input);
             },
-            caesar: function(input) {
-                const shift = 3;
+            caesar: function(input, shift = 3) {
                 return input.replace(/[a-zA-Z]/g, char => {
                     const base = char <= 'Z' ? 65 : 97;
                     return String.fromCharCode((char.charCodeAt(0) - base - shift + 26) % 26 + base);
                 });
             },
             rot13: function(input) {
-                return input.replace(/[a-zA-Z]/g, char => {
-                    const base = char <= 'Z' ? 65 : 97;
-                    return String.fromCharCode((char.charCodeAt(0) - base + 13) % 26 + base);
-                });
+                return decoders.caesar(input, 13);
             },
             atbash: function(input) {
                 return input.replace(/[a-zA-Z]/g, char => {
-                    const base = char <= 'Z' ? 90 : 122;
-                    return String.fromCharCode(base - (char.charCodeAt(0) - (base - 25)));
+                    const base = char <= 'Z' ? 65 : 97;
+                    return String.fromCharCode(base + 25 - (char.charCodeAt(0) - base));
                 });
             },
-            vigenere: function(input) {
-                const key = 'lemon'.toUpperCase();
+            vigenere: function(input, key = 'lemon') {
+                key = key.toUpperCase();
                 let keyIndex = 0;
                 return input.toUpperCase().replace(/[A-Z]/g, char => {
                     const shift = key[keyIndex % key.length].charCodeAt(0) - 65;
                     keyIndex++;
                     return String.fromCharCode((char.charCodeAt(0) - 65 - shift + 26) % 26 + 65);
-                }).toLowerCase(); // Assuming case insensitive, output lower
+                });
             },
             ascii: function(input) {
                 return input.split(' ').map(num => String.fromCharCode(parseInt(num, 10))).join('');
@@ -145,17 +189,11 @@
                 return txt.value;
             },
             pigpen: function(input) {
-                // Pigpen uses symbols, but for simplicity, assume input is like A=▢, etc. This is placeholder.
-                // Real implementation would need a map of symbols to letters.
-                return 'Pigpen decoding not fully implemented in text; use visual map.';
+                return 'Pigpen decoding not fully implemented; use visual map.';
             },
             tap: function(input) {
-                // Tap code: 11=A, 12=B, ..., 55=Z (no K, use C)
-                const tapMap = [' ', 'A','B','C','D','E', 'F','G','H','I','J', 'L','M','N','O','P', 'Q','R','S','T','U', 'V','W','X','Y','Z'];
-                return input.match(/\d\d/g).map(code => {
-                    const row = parseInt(code[0]), col = parseInt(code[1]);
-                    return tapMap[(row-1)*5 + col] || '?';
-                }).join('');
+                const revTap = Object.fromEntries(Object.entries(tapMap).map(([k, v]) => [v, k]));
+                return input.match(/\d\d/g).map(code => revTap[code] || '?').join('');
             },
             a1z26: function(input) {
                 return input.split(' ').map(num => String.fromCharCode(parseInt(num) + 64)).join('');
@@ -164,45 +202,116 @@
                 return input.split('').reverse().join('');
             },
             leet: function(input) {
-                const leetMap = {'4':'A','8':'B','C':'C','D':'D','3':'E','F':'F','6':'G','H':'H','1':'I','J':'J','K':'K','L':'L','M':'M','N':'N','0':'O','P':'P','Q':'Q','R':'R','5':'S','7':'T','U':'U','V':'V','W':'W','X':'X','Y':'Y','2':'Z'};
-                return input.toUpperCase().split('').map(char => leetMap[char] || char).join('');
+                const revLeet = Object.fromEntries(Object.entries(leetMap).map(([k, v]) => [v, k]));
+                return input.toUpperCase().split('').map(char => revLeet[char] || char).join('');
             },
             morseAudio: function(input) {
-                // Assuming dit=., dah=-
                 return decoders.morse(input.replace(/dit/gi, '.').replace(/dah/gi, '-'));
             },
             semaphore: function(input) {
-                // Semaphore uses positions, placeholder
                 return 'Semaphore decoding requires position descriptions; not implemented.';
             },
             nato: function(input) {
-                const natoMap = {
-                    'ALFA':'A', 'BRAVO':'B', 'CHARLIE':'C', 'DELTA':'D', 'ECHO':'E',
-                    'FOXTROT':'F', 'GOLF':'G', 'HOTEL':'H', 'INDIA':'I', 'JULIETT':'J',
-                    'KILO':'K', 'LIMA':'L', 'MIKE':'M', 'NOVEMBER':'N', 'OSCAR':'O',
-                    'PAPA':'P', 'QUEBEC':'Q', 'ROMEO':'R', 'SIERRA':'S', 'TANGO':'T',
-                    'UNIFORM':'U', 'VICTOR':'V', 'WHISKEY':'W', 'XRAY':'X', 'YANKEE':'Y',
-                    'ZULU':'Z'
-                };
-                return input.toUpperCase().split(' ').map(word => natoMap[word] || '?').join('');
+                const revNato = Object.fromEntries(Object.entries(natoMap).map(([k, v]) => [v, k]));
+                return input.toUpperCase().split(' ').map(word => revNato[word] || '?').join('');
             }
         };
 
-        function decode() {
+        const encoders = {
+            morse: function(input) {
+                return input.toUpperCase().split('').map(char => morseCode[char] || '').join(' ');
+            },
+            braille: function(input) {
+                return input.toUpperCase().split('').map(char => brailleMap[char] || char).join('');
+            },
+            binary: function(input) {
+                return input.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+            },
+            hex: function(input) {
+                return input.split('').map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+            },
+            base64: function(input) {
+                return btoa(input);
+            },
+            caesar: function(input, shift = 3) {
+                return input.replace(/[a-zA-Z]/g, char => {
+                    const base = char <= 'Z' ? 65 : 97;
+                    return String.fromCharCode((char.charCodeAt(0) - base + shift) % 26 + base);
+                });
+            },
+            rot13: function(input) {
+                return encoders.caesar(input, 13);
+            },
+            atbash: function(input) {
+                return decoders.atbash(input); // Atbash is involutory
+            },
+            vigenere: function(input, key = 'lemon') {
+                key = key.toUpperCase();
+                let keyIndex = 0;
+                return input.toUpperCase().replace(/[A-Z]/g, char => {
+                    const shift = key[keyIndex % key.length].charCodeAt(0) - 65;
+                    keyIndex++;
+                    return String.fromCharCode((char.charCodeAt(0) - 65 + shift) % 26 + 65);
+                });
+            },
+            ascii: function(input) {
+                return input.split('').map(char => char.charCodeAt(0)).join(' ');
+            },
+            url: function(input) {
+                return encodeURIComponent(input);
+            },
+            html: function(input) {
+                return input.replace(/[&<>"']/g, char => '&#' + char.charCodeAt(0) + ';');
+            },
+            pigpen: function(input) {
+                return 'Pigpen encoding not fully implemented; use visual map.';
+            },
+            tap: function(input) {
+                return input.toUpperCase().split('').map(char => tapMap[char] || '??').join(' ');
+            },
+            a1z26: function(input) {
+                return input.toUpperCase().split('').map(char => char.charCodeAt(0) - 64).join(' ');
+            },
+            reverse: function(input) {
+                return input.split('').reverse().join('');
+            },
+            leet: function(input) {
+                return input.toUpperCase().split('').map(char => leetMap[char] || char).join('');
+            },
+            morseAudio: function(input) {
+                return encoders.morse(input).replace(/\./g, 'dit').replace(/-/g, 'dah');
+            },
+            semaphore: function(input) {
+                return 'Semaphore encoding requires position descriptions; not implemented.';
+            },
+            nato: function(input) {
+                return input.toUpperCase().split('').map(char => natoMap[char] || '?').join(' ');
+            }
+        };
+
+        function process() {
+            const mode = document.getElementById('mode').value;
             const type = document.getElementById('cipherType').value;
             const input = document.getElementById('inputText').value.trim();
             const outputDiv = document.getElementById('output');
             
-            if (!decoders[type]) {
-                outputDiv.textContent = 'Decoder not implemented yet.';
+            const processor = mode === 'decode' ? decoders : encoders;
+            
+            if (!processor[type]) {
+                outputDiv.textContent = 'Processor not implemented yet.';
                 return;
             }
             
             try {
-                const result = decoders[type](input);
+                let result;
+                if (['caesar', 'vigenere'].includes(type)) {
+                    result = processor[type](input);
+                } else {
+                    result = processor[type](input);
+                }
                 outputDiv.textContent = result;
             } catch (e) {
-                outputDiv.textContent = 'Error decoding: ' + e.message;
+                outputDiv.textContent = 'Error processing: ' + e.message;
             }
         }
     </script>
