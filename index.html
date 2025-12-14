@@ -18,8 +18,8 @@
         }
         .container {
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.15); /* Very light transparent white for subtle card effect */
-            backdrop-filter: blur(10px); /* Nice glassmorphism effect */
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -47,21 +47,26 @@
             margin-bottom: 20px;
             border-radius: 10px;
             border: none;
-            background-color: rgba(255, 255, 255, 0.25);
-            color: white;
+            background-color: rgba(255, 255, 255, 0.9); /* Almost white background for readability */
+            color: black; /* Black text so selections are clearly visible */
             font-size: 16px;
         }
-        select::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+        select option {
+            background-color: white;
+            color: black;
         }
         textarea {
             height: 150px;
             resize: vertical;
+            color: black; /* Black text in textarea too */
+        }
+        textarea::placeholder {
+            color: rgba(0, 0, 0, 0.5);
         }
         button {
             padding: 14px;
             font-size: 18px;
-            background-color: #ff4444; /* Vibrant red-orange */
+            background-color: #ff4444;
             color: white;
             border: none;
             border-radius: 10px;
