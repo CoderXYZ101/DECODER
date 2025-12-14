@@ -5,81 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Code Encrypter/Decrypter</title>
     <style>
-        body {
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: orange;
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.15); /* Very light transparent white for subtle card effect */
+            backdrop-filter: blur(10px); /* Nice glassmorphism effect */
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            font-size: 28px;
         }
         label {
             display: block;
             margin-bottom: 10px;
+            color: white;
+            text-align: left;
+            font-weight: bold;
         }
-        select, textarea, button {
+        select, textarea {
             width: 100%;
+            padding: 12px;
             margin-bottom: 20px;
+            border-radius: 10px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
+            font-size: 16px;
+        }
+        select::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
         textarea {
             height: 150px;
-        }
-        #output {
-            border: 1px solid #ccc;
-            padding: 10px;
-            min-height: 100px;
-            background-color: orange;
-            border-radius: 10px;
+            resize: vertical;
         }
         button {
-            background-color: orange;
-            border: none;
+            padding: 14px;
+            font-size: 18px;
+            background-color: #ff4444; /* Vibrant red-orange */
             color: white;
-            padding: 10px;
-            border-radius: 5px;
+            border: none;
+            border-radius: 10px;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #ff2222;
+        }
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            min-height: 100px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            text-align: left;
+            word-wrap: break-word;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .signature {
+            margin-top: 40px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-    <h1>Universal Code Encrypter/Decrypter</h1>
-    <p>This tool encodes and decodes various common codes and ciphers. Select the mode, type, and input the text.</p>
-    
-    <label for="mode">Select Mode:</label>
-    <select id="mode">
-        <option value="decode">Decode</option>
-        <option value="encode">Encode</option>
-    </select>
-    
-    <label for="cipherType">Select Code Type:</label>
-    <select id="cipherType">
-        <option value="morse">Morse Code</option>
-        <option value="braille">Braille</option>
-        <option value="binary">Binary</option>
-        <option value="hex">Hexadecimal</option>
-        <option value="base64">Base64</option>
-        <option value="caesar">Caesar Cipher (Shift 3)</option>
-        <option value="rot13">ROT13</option>
-        <option value="atbash">Atbash Cipher</option>
-        <option value="vigenere">Vigenère Cipher (Key: lemon)</option>
-        <option value="ascii">ASCII Decimal</option>
-        <option value="url">URL Encoding</option>
-        <option value="html">HTML Entities</option>
-        <option value="pigpen">Pigpen Cipher</option>
-        <option value="tap">Tap Code (Knock Code)</option>
-        <option value="a1z26">A1Z26 (Letters to Numbers)</option>
-        <option value="reverse">Reverse Text</option>
-        <option value="leet">Leet Speak (Basic)</option>
-        <option value="morseAudio">Morse (Audio Representation, e.g., dit/dah)</option>
-        <option value="semaphore">Semaphore (Flag Positions)</option>
-        <option value="nato">NATO Phonetic Alphabet</option>
-    </select>
-    
-    <label for="inputText">Input Text:</label>
-    <textarea id="inputText" placeholder="Enter text here..."></textarea>
-    
-    <button onclick="process()">Process</button>
-    
-    <h2>Output:</h2>
-    <div id="output"></div>
+    <div class="container">
+        <h1>Universal Code Encrypter/Decrypter</h1>
+        <p style="color: rgba(255,255,255,0.9); margin-bottom: 30px;">
+            Encode or decode messages using dozens of classic codes and ciphers.
+        </p>
+
+        <label for="mode">Mode:</label>
+        <select id="mode">
+            <option value="decode">Decode</option>
+            <option value="encode">Encode</option>
+        </select>
+
+        <label for="cipherType">Code/Cipher Type:</label>
+        <select id="cipherType">
+            <option value="morse">Morse Code</option>
+            <option value="braille">Braille</option>
+            <option value="binary">Binary</option>
+            <option value="hex">Hexadecimal</option>
+            <option value="base64">Base64</option>
+            <option value="caesar">Caesar Cipher (Shift 3)</option>
+            <option value="rot13">ROT13</option>
+            <option value="atbash">Atbash Cipher</option>
+            <option value="vigenere">Vigenère Cipher (Key: lemon)</option>
+            <option value="ascii">ASCII Decimal</option>
+            <option value="url">URL Encoding</option>
+            <option value="html">HTML Entities</option>
+            <option value="pigpen">Pigpen Cipher</option>
+            <option value="tap">Tap Code (Knock Code)</option>
+            <option value="a1z26">A1Z26 (Letters to Numbers)</option>
+            <option value="reverse">Reverse Text</option>
+            <option value="leet">Leet Speak (Basic)</option>
+            <option value="morseAudio">Morse (dit/dah)</option>
+            <option value="nato">NATO Phonetic Alphabet</option>
+        </select>
+
+        <label for="inputText">Input Text:</label>
+        <textarea id="inputText" placeholder="Enter your text here..."></textarea>
+
+        <button onclick="process()">Process</button>
+
+        <h2 style="color: white; margin-top: 40px;">Output:</h2>
+        <div id="output"></div>
+
+        <p class="signature">By: Sasi</p>
+    </div>
 
     <script>
         const morseCode = {
@@ -102,11 +162,7 @@
             'K': '⠅', 'L': '⠇', 'M': '⠍', 'N': '⠝', 'O': '⠕',
             'P': '⠏', 'Q': '⠟', 'R': '⠗', 'S': '⠎', 'T': '⠞',
             'U': '⠥', 'V': '⠧', 'W': '⠺', 'X': '⠭', 'Y': '⠽',
-            'Z': '⠵', '#': '⠼', '.': '⠲', '?': '⠦', '!': '⠖',
-            '-': '⠤', '/': '⠌', '\\': '⠳', '(': '⠪', ')': '⠻',
-            '0': '⠼⠚', '1': '⠼⠁', '2': '⠼⠃', '3': '⠼⠉', '4': '⠼⠙',
-            '5': '⠼⠑', '6': '⠼⠋', '7': '⠼⠛', '8': '⠼⠓', '9': '⠼⠊',
-            ' ': ' '
+            'Z': '⠵', ' ': ' '
         };
 
         const tapMap = {
@@ -115,7 +171,7 @@
             'K': '13', 'L': '31', 'M': '32', 'N': '33', 'O': '34', 'P': '35',
             'Q': '41', 'R': '42', 'S': '43', 'T': '44', 'U': '45',
             'V': '51', 'W': '52', 'X': '53', 'Y': '54', 'Z': '55',
-            ' ': '00' // Placeholder for space
+            ' ': '00'
         };
 
         const leetMap = {
@@ -136,157 +192,68 @@
         };
 
         const decoders = {
-            morse: function(input) {
-                const revMorse = Object.fromEntries(Object.entries(morseCode).map(([k, v]) => [v, k]));
-                return input.split(' ').map(code => revMorse[code] || '').join('');
-            },
-            braille: function(input) {
-                const revBraille = Object.fromEntries(Object.entries(brailleMap).map(([k, v]) => [v, k]));
-                return input.split('').map(char => revBraille[char] || char).join('');
-            },
-            binary: function(input) {
-                return input.match(/.{1,8}/g).map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
-            },
-            hex: function(input) {
-                return input.match(/.{1,2}/g).map(hex => String.fromCharCode(parseInt(hex, 16))).join('');
-            },
-            base64: function(input) {
-                return atob(input);
-            },
-            caesar: function(input, shift = 3) {
-                return input.replace(/[a-zA-Z]/g, char => {
-                    const base = char <= 'Z' ? 65 : 97;
-                    return String.fromCharCode((char.charCodeAt(0) - base - shift + 26) % 26 + base);
-                });
-            },
-            rot13: function(input) {
-                return decoders.caesar(input, 13);
-            },
-            atbash: function(input) {
-                return input.replace(/[a-zA-Z]/g, char => {
-                    const base = char <= 'Z' ? 65 : 97;
-                    return String.fromCharCode(base + 25 - (char.charCodeAt(0) - base));
-                });
-            },
-            vigenere: function(input, key = 'lemon') {
+            morse: input => input.split(' ').map(c => Object.entries(morseCode).find(([k,v]) => v === c)?.[0] || '').join(''),
+            braille: input => input.split('').map(c => Object.entries(brailleMap).find(([k,v]) => v === c)?.[0] || c).join(''),
+            binary: input => input.match(/.{8}/g)?.map(b => String.fromCharCode(parseInt(b, 2))).join('') || '',
+            hex: input => input.match(/.{2}/g)?.map(h => String.fromCharCode(parseInt(h, 16))).join('') || '',
+            base64: input => atob(input),
+            caesar: (input, shift = 3) => input.replace(/[a-zA-Z]/g, c => {
+                const base = c <= 'Z' ? 65 : 97;
+                return String.fromCharCode((c.charCodeAt(0) - base - shift + 26) % 26 + base);
+            }),
+            rot13: input => decoders.caesar(input, 13),
+            atbash: input => input.replace(/[a-zA-Z]/g, c => {
+                const base = c <= 'Z' ? 65 : 97;
+                return String.fromCharCode(base + 25 - (c.charCodeAt(0) - base));
+            }),
+            vigenere: (input, key = 'lemon') => {
                 key = key.toUpperCase();
-                let keyIndex = 0;
-                return input.toUpperCase().replace(/[A-Z]/g, char => {
-                    const shift = key[keyIndex % key.length].charCodeAt(0) - 65;
-                    keyIndex++;
-                    return String.fromCharCode((char.charCodeAt(0) - 65 - shift + 26) % 26 + 65);
+                let i = 0;
+                return input.toUpperCase().replace(/[A-Z]/g, c => {
+                    const s = key[i++ % key.length].charCodeAt(0) - 65;
+                    return String.fromCharCode((c.charCodeAt(0) - 65 - s + 26) % 26 + 65);
                 });
             },
-            ascii: function(input) {
-                return input.split(' ').map(num => String.fromCharCode(parseInt(num, 10))).join('');
-            },
-            url: function(input) {
-                return decodeURIComponent(input);
-            },
-            html: function(input) {
-                const txt = document.createElement('textarea');
-                txt.innerHTML = input;
-                return txt.value;
-            },
-            pigpen: function(input) {
-                return 'Pigpen decoding not fully implemented; use visual map.';
-            },
-            tap: function(input) {
-                const revTap = Object.fromEntries(Object.entries(tapMap).map(([k, v]) => [v, k]));
-                return input.match(/\d\d/g).map(code => revTap[code] || '?').join('');
-            },
-            a1z26: function(input) {
-                return input.split(' ').map(num => String.fromCharCode(parseInt(num) + 64)).join('');
-            },
-            reverse: function(input) {
-                return input.split('').reverse().join('');
-            },
-            leet: function(input) {
-                const revLeet = Object.fromEntries(Object.entries(leetMap).map(([k, v]) => [v, k]));
-                return input.toUpperCase().split('').map(char => revLeet[char] || char).join('');
-            },
-            morseAudio: function(input) {
-                return decoders.morse(input.replace(/dit/gi, '.').replace(/dah/gi, '-'));
-            },
-            semaphore: function(input) {
-                return 'Semaphore decoding requires position descriptions; not implemented.';
-            },
-            nato: function(input) {
-                const revNato = Object.fromEntries(Object.entries(natoMap).map(([k, v]) => [v, k]));
-                return input.toUpperCase().split(' ').map(word => revNato[word] || '?').join('');
-            }
+            ascii: input => input.split(' ').map(n => String.fromCharCode(parseInt(n))).join(''),
+            url: input => decodeURIComponent(input),
+            html: input => { const t = document.createElement('textarea'); t.innerHTML = input; return t.value; },
+            tap: input => input.match(/\d\d/g)?.map(c => Object.entries(tapMap).find(([k,v]) => v === c)?.[0] || '?').join('') || '',
+            a1z26: input => input.split(' ').map(n => String.fromCharCode(parseInt(n) + 64)).join(''),
+            reverse: input => input.split('').reverse().join(''),
+            leet: input => input.toUpperCase().split('').map(c => Object.entries(leetMap).find(([k,v]) => v === c)?.[0] || c).join(''),
+            morseAudio: input => decoders.morse(input.replace(/dit/gi, '.').replace(/dah/gi, '-')),
+            nato: input => input.toUpperCase().split(' ').map(w => Object.entries(natoMap).find(([k,v]) => v === w)?.[0] || '?').join('')
         };
 
         const encoders = {
-            morse: function(input) {
-                return input.toUpperCase().split('').map(char => morseCode[char] || '').join(' ');
-            },
-            braille: function(input) {
-                return input.toUpperCase().split('').map(char => brailleMap[char] || char).join('');
-            },
-            binary: function(input) {
-                return input.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
-            },
-            hex: function(input) {
-                return input.split('').map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
-            },
-            base64: function(input) {
-                return btoa(input);
-            },
-            caesar: function(input, shift = 3) {
-                return input.replace(/[a-zA-Z]/g, char => {
-                    const base = char <= 'Z' ? 65 : 97;
-                    return String.fromCharCode((char.charCodeAt(0) - base + shift) % 26 + base);
-                });
-            },
-            rot13: function(input) {
-                return encoders.caesar(input, 13);
-            },
-            atbash: function(input) {
-                return decoders.atbash(input); // Atbash is involutory
-            },
-            vigenere: function(input, key = 'lemon') {
+            morse: input => input.toUpperCase().split('').map(c => morseCode[c] || '').join(' '),
+            braille: input => input.toUpperCase().split('').map(c => brailleMap[c] || c).join(''),
+            binary: input => input.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' '),
+            hex: input => input.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0').toUpperCase()).join(' '),
+            base64: input => btoa(input),
+            caesar: (input, shift = 3) => input.replace(/[a-zA-Z]/g, c => {
+                const base = c <= 'Z' ? 65 : 97;
+                return String.fromCharCode((c.charCodeAt(0) - base + shift) % 26 + base);
+            }),
+            rot13: input => encoders.caesar(input, 13),
+            atbash: input => decoders.atbash(input),
+            vigenere: (input, key = 'lemon') => {
                 key = key.toUpperCase();
-                let keyIndex = 0;
-                return input.toUpperCase().replace(/[A-Z]/g, char => {
-                    const shift = key[keyIndex % key.length].charCodeAt(0) - 65;
-                    keyIndex++;
-                    return String.fromCharCode((char.charCodeAt(0) - 65 + shift) % 26 + 65);
+                let i = 0;
+                return input.toUpperCase().replace(/[A-Z]/g, c => {
+                    const s = key[i++ % key.length].charCodeAt(0) - 65;
+                    return String.fromCharCode((c.charCodeAt(0) - 65 + s) % 26 + 65);
                 });
             },
-            ascii: function(input) {
-                return input.split('').map(char => char.charCodeAt(0)).join(' ');
-            },
-            url: function(input) {
-                return encodeURIComponent(input);
-            },
-            html: function(input) {
-                return input.replace(/[&<>"']/g, char => '&#' + char.charCodeAt(0) + ';');
-            },
-            pigpen: function(input) {
-                return 'Pigpen encoding not fully implemented; use visual map.';
-            },
-            tap: function(input) {
-                return input.toUpperCase().split('').map(char => tapMap[char] || '??').join(' ');
-            },
-            a1z26: function(input) {
-                return input.toUpperCase().split('').map(char => char.charCodeAt(0) - 64).join(' ');
-            },
-            reverse: function(input) {
-                return input.split('').reverse().join('');
-            },
-            leet: function(input) {
-                return input.toUpperCase().split('').map(char => leetMap[char] || char).join('');
-            },
-            morseAudio: function(input) {
-                return encoders.morse(input).replace(/\./g, 'dit').replace(/-/g, 'dah');
-            },
-            semaphore: function(input) {
-                return 'Semaphore encoding requires position descriptions; not implemented.';
-            },
-            nato: function(input) {
-                return input.toUpperCase().split('').map(char => natoMap[char] || '?').join(' ');
-            }
+            ascii: input => input.split('').map(c => c.charCodeAt(0)).join(' '),
+            url: input => encodeURIComponent(input),
+            html: input => input.replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';'),
+            tap: input => input.toUpperCase().split('').map(c => tapMap[c] || '??').join(' '),
+            a1z26: input => input.toUpperCase().split('').map(c => c.charCodeAt(0) - 64).join(' '),
+            reverse: input => input.split('').reverse().join(''),
+            leet: input => input.toUpperCase().split('').map(c => leetMap[c] || c).join(''),
+            morseAudio: input => encoders.morse(input).replace(/\./g, 'dit').replace(/-/g, 'dah'),
+            nato: input => input.toUpperCase().split('').map(c => natoMap[c] || '?').join(' ')
         };
 
         function process() {
@@ -294,24 +261,19 @@
             const type = document.getElementById('cipherType').value;
             const input = document.getElementById('inputText').value.trim();
             const outputDiv = document.getElementById('output');
-            
-            const processor = mode === 'decode' ? decoders : encoders;
-            
-            if (!processor[type]) {
-                outputDiv.textContent = 'Processor not implemented yet.';
+
+            const lib = mode === 'decode' ? decoders : encoders;
+
+            if (!lib[type]) {
+                outputDiv.textContent = 'Not implemented yet.';
                 return;
             }
-            
+
             try {
-                let result;
-                if (['caesar', 'vigenere'].includes(type)) {
-                    result = processor[type](input);
-                } else {
-                    result = processor[type](input);
-                }
-                outputDiv.textContent = result;
+                const result = lib[type](input);
+                outputDiv.textContent = result || '(empty)';
             } catch (e) {
-                outputDiv.textContent = 'Error processing: ' + e.message;
+                outputDiv.textContent = 'Error: ' + e.message;
             }
         }
     </script>
