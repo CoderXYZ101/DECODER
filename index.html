@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Code Decrypter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        select, textarea, button {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        textarea {
+            height: 150px;
+        }
+        #output {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Universal Code Decrypter</h1>
+    <p>This tool decodes various common codes and ciphers. Select the type and input the encoded text.</p>
+    
+    <label for="cipherType">Select Code Type:</label>
+    <select id="cipherType">
+        <option value="morse">Morse Code</option>
+        <option value="braille">Braille</option>
+        <option value="binary">Binary</option>
+        <option value="hex">Hexadecimal</option>
+        <option value="base64">Base64</option>
+        <option value="caesar">Caesar Cipher (Shift 3)</option>
+        <option value="rot13">ROT13</option>
+        <option value="atbash">Atbash Cipher</option>
+        <option value="vigenere">Vigenère Cipher (Key: lemon)</option>
+        <option value="ascii">ASCII Decimal</option>
+        <option value="url">URL Encoding</option>
+        <option value="html">HTML Entities</option>
+        <option value="pigpen">Pigpen Cipher</option>
+        <option value="tap">Tap Code (Knock Code)</option>
+        <option value="a1z26">A1Z26 (Letters to Numbers)</option>
+        <option value="reverse">Reverse Text</option>
+        <option value="leet">Leet Speak (Basic)</option>
+        <option value="morseAudio">Morse (Audio Representation, e.g., dit/dah)</option>
+        <option value="semaphore">Semaphore (Flag Positions)</option>
+        <option value="nato">NATO Phonetic Alphabet</option>
+    </select>
+    
+    <label for="inputText">Encoded Input:</label>
+    <textarea id="inputText" placeholder="Enter encoded text here..."></textarea>
+    
+    <button onclick="decode()">Decode</button>
+    
+    <h2>Decoded Output:</h2>
+    <div id="output"></div>
+
+    <script>
+        const decoders = {
+            morse: function(input) {
+                const morseCode = {
+                    '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
+                    '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
+                    '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
+                    '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
+                    '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y',
+                    '--..': 'Z', '-----': '0', '.----': '1', '..---': '2', '...--': '3',
+                    '....-': '4', '.....': '5', '-....': '6', '--...': '7', '---..': '8',
+                    '----.': '9', '.-.-.-': '.', '--..--': ',', '..--..': '?', '.----.': "'",
+                    '-.-.--': '!', '-..-.': '/', '-.--.': '(', '-.--.-': ')', '.-...': '&',
+                    '---...': ':', '-.-.-.': ';', '-...-': '=', '.-.-.': '+', '-....-': '-',
+                    '..--.-': '_', '.-..-.': '"', '...-..-': '$', '.--.-.': '@', '/': ' '
+                };
+                return input.split(' ').map(code => morseCode[code] || '').join('');
+            },
+            braille: function(input) {
+                const brailleMap = {
+                    '⠁': 'A', '⠃': 'B', '⠉': 'C', '⠙': 'D', '⠑': 'E',
+                    '⠋': 'F', '⠛': 'G', '⠓': 'H', '⠊': 'I', '⠚': 'J',
+                    '⠅': 'K', '⠇': 'L', '⠍': 'M', '⠝': 'N', '⠕': 'O',
+                    '⠏': 'P', '⠟': 'Q', '⠗': 'R', '⠎': 'S', '⠞': 'T',
+                    '⠥': 'U', '⠧': 'V', '⠺': 'W', '⠭': 'X', '⠽': 'Y',
+                    '⠵': 'Z', '⠼': '#', '⠲': '.', '⠦': '?', '⠖': '!',
+                    '⠤': '-', '⠌': '/', '⠳': '\\', '⠪': '(', '⠻': ')'
+                    // Add more if needed, but this is basic letters and punctuation
+                };
+                return input.split('').map(char => brailleMap[char] || char).join('');
+            },
+            binary: function(input) {
+                return input.match(/.{1,8}/g).map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
+            },
+            hex: function(input) {
+                return input.match(/.{1,2}/g).map(hex => String.fromCharCode(parseInt(hex, 16))).join('');
+            },
+            base64: function(input) {
+                return atob(input);
+            },
+            caesar: function(input) {
+                const shift = 3;
+                return input.replace(/[a-zA-Z]/g, char => {
+                    const base = char <= 'Z' ? 65 : 97;
+                    return String.fromCharCode((char.charCodeAt(0) - base - shift + 26) % 26 + base);
+                });
+            },
+            rot13: function(input) {
+                return input.replace(/[a-zA-Z]/g, char => {
+                    const base = char <= 'Z' ? 65 : 97;
+                    return String.fromCharCode((char.charCodeAt(0) - base + 13) % 26 + base);
+                });
+            },
+            atbash: function(input) {
+                return input.replace(/[a-zA-Z]/g, char => {
+                    const base = char <= 'Z' ? 90 : 122;
+                    return String.fromCharCode(base - (char.charCodeAt(0) - (base - 25)));
+                });
+            },
+            vigenere: function(input) {
+                const key = 'lemon'.toUpperCase();
+                let keyIndex = 0;
+                return input.toUpperCase().replace(/[A-Z]/g, char => {
+                    const shift = key[keyIndex % key.length].charCodeAt(0) - 65;
+                    keyIndex++;
+                    return String.fromCharCode((char.charCodeAt(0) - 65 - shift + 26) % 26 + 65);
+                }).toLowerCase(); // Assuming case insensitive, output lower
+            },
+            ascii: function(input) {
+                return input.split(' ').map(num => String.fromCharCode(parseInt(num, 10))).join('');
+            },
+            url: function(input) {
+                return decodeURIComponent(input);
+            },
+            html: function(input) {
+                const txt = document.createElement('textarea');
+                txt.innerHTML = input;
+                return txt.value;
+            },
+            pigpen: function(input) {
+                // Pigpen uses symbols, but for simplicity, assume input is like A=▢, etc. This is placeholder.
+                // Real implementation would need a map of symbols to letters.
+                return 'Pigpen decoding not fully implemented in text; use visual map.';
+            },
+            tap: function(input) {
+                // Tap code: 11=A, 12=B, ..., 55=Z (no K, use C)
+                const tapMap = [' ', 'A','B','C','D','E', 'F','G','H','I','J', 'L','M','N','O','P', 'Q','R','S','T','U', 'V','W','X','Y','Z'];
+                return input.match(/\d\d/g).map(code => {
+                    const row = parseInt(code[0]), col = parseInt(code[1]);
+                    return tapMap[(row-1)*5 + col] || '?';
+                }).join('');
+            },
+            a1z26: function(input) {
+                return input.split(' ').map(num => String.fromCharCode(parseInt(num) + 64)).join('');
+            },
+            reverse: function(input) {
+                return input.split('').reverse().join('');
+            },
+            leet: function(input) {
+                const leetMap = {'4':'A','8':'B','C':'C','D':'D','3':'E','F':'F','6':'G','H':'H','1':'I','J':'J','K':'K','L':'L','M':'M','N':'N','0':'O','P':'P','Q':'Q','R':'R','5':'S','7':'T','U':'U','V':'V','W':'W','X':'X','Y':'Y','2':'Z'};
+                return input.toUpperCase().split('').map(char => leetMap[char] || char).join('');
+            },
+            morseAudio: function(input) {
+                // Assuming dit=., dah=-
+                return decoders.morse(input.replace(/dit/gi, '.').replace(/dah/gi, '-'));
+            },
+            semaphore: function(input) {
+                // Semaphore uses positions, placeholder
+                return 'Semaphore decoding requires position descriptions; not implemented.';
+            },
+            nato: function(input) {
+                const natoMap = {
+                    'ALFA':'A', 'BRAVO':'B', 'CHARLIE':'C', 'DELTA':'D', 'ECHO':'E',
+                    'FOXTROT':'F', 'GOLF':'G', 'HOTEL':'H', 'INDIA':'I', 'JULIETT':'J',
+                    'KILO':'K', 'LIMA':'L', 'MIKE':'M', 'NOVEMBER':'N', 'OSCAR':'O',
+                    'PAPA':'P', 'QUEBEC':'Q', 'ROMEO':'R', 'SIERRA':'S', 'TANGO':'T',
+                    'UNIFORM':'U', 'VICTOR':'V', 'WHISKEY':'W', 'XRAY':'X', 'YANKEE':'Y',
+                    'ZULU':'Z'
+                };
+                return input.toUpperCase().split(' ').map(word => natoMap[word] || '?').join('');
+            }
+        };
+
+        function decode() {
+            const type = document.getElementById('cipherType').value;
+            const input = document.getElementById('inputText').value.trim();
+            const outputDiv = document.getElementById('output');
+            
+            if (!decoders[type]) {
+                outputDiv.textContent = 'Decoder not implemented yet.';
+                return;
+            }
+            
+            try {
+                const result = decoders[type](input);
+                outputDiv.textContent = result;
+            } catch (e) {
+                outputDiv.textContent = 'Error decoding: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
